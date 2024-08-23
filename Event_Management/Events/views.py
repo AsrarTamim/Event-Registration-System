@@ -11,7 +11,8 @@ def event_list(request):
 
 def event_detail(request, pk):
     event = get_object_or_404(Event, pk=pk)
-    return render(request, 'events/event_details.html', {'event': event})
+    registration = Registration.objects.filter(event=event, user=request.user).first()
+    return render(request, 'events/event_details.html', {'event': event, 'registration': registration,})
 
 
 @login_required
@@ -30,3 +31,15 @@ def event_register(request, pk):
         form = RegistrationForm()
 
     return render(request, 'events/event_register.html', {'event': event, 'form': form})
+
+
+@login_required
+def unregister_from_event(request, pk):
+    event = get_object_or_404(Event, pk=pk)
+    registration = Registration.objects.filter(event=event, user=request.user).first()
+    if registration:
+        registration.delete()
+        messages.success(request, f'You have successfully unregistered from {event.title}.')
+    else:
+        messages.error(request, f'You are not registered for {event.title}.')
+    return redirect('event_detail', pk=event.pk)
