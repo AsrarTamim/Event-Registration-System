@@ -2,10 +2,8 @@
 
 {% block content %}
 <h2>{{ event.title }}</h2>
-<p><strong>Date:</strong> {{ event.date }}</p>
-<p><strong>Time:</strong> {{ event.time }}</p>
-<p><strong>Location:</strong> {{ event.location }}</p>
 <p>{{ event.description }}</p>
-
-<a href="{% url 'register_event' event.pk %}">Register for Event</a>
+<p>Date: {{ event.date }}</p>
+<p>Time: {{ event.time }}</p>
+<p>Location: {{ event.location }}</p>
 {% endblock %}
