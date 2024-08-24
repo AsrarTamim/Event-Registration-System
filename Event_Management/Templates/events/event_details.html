@@ -6,6 +6,7 @@
 <p>Date: {{ event.date }}</p>
 <p>Time: {{ event.time }}</p>
 <p>Location: {{ event.location }}</p>
+<p>Available Slots: {{ event.slots }}</p>
 {% if user.is_authenticated %}
 {% if registration %}
 <form method="POST" action="{% url 'unregister_from_event' event.pk %}">

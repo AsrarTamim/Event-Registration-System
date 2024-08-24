@@ -12,7 +12,7 @@ def event_list(request):
         events = Event.objects.all().order_by('date')
     return render(request, 'events/event_list.html', {'events': events})
 
-
+@login_required
 def event_detail(request, pk):
     event = get_object_or_404(Event, pk=pk)
     registration = Registration.objects.filter(event=event, user=request.user).first()
@@ -22,18 +22,23 @@ def event_detail(request, pk):
 @login_required
 def event_register(request, pk):
     event = get_object_or_404(Event, pk=pk)
-    if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            registration = form.save(commit=False)
-            registration.event = event
-            registration.user = request.user
-            registration.save()
-            messages.success(request, 'You have successfully registered for the event!')
-            return redirect('event_detail', pk=event.pk)
+    if event.slots > 0:
+        if request.method == 'POST':
+            form = RegistrationForm(request.POST)
+            if form.is_valid():
+                registration = form.save(commit=False)
+                registration.event = event
+                registration.user = request.user
+                registration.save()
+                event.slots -= 1
+                event.save()                
+                messages.success(request, 'You have successfully registered for the event!')
+                return redirect('event_detail', pk=event.pk)
+        else:
+            form = RegistrationForm()
     else:
-        form = RegistrationForm()
-
+        messages.error(request, 'Sorry, no slots are available for this event.')
+        return redirect('event_detail', pk=event.pk)
     return render(request, 'events/event_register.html', {'event': event, 'form': form})
 
 
@@ -43,6 +48,8 @@ def unregister_from_event(request, pk):
     registration = Registration.objects.filter(event=event, user=request.user).first()
     if registration:
         registration.delete()
+        event.slots += 1
+        event.save()
         messages.success(request, f'You have successfully unregistered from {event.title}.')
     else:
         messages.error(request, f'You are not registered for {event.title}.')
