@@ -3,20 +3,32 @@ from django.contrib.auth.decorators import login_required
 from .models import Event,Registration
 from django.contrib import messages
 from .forms import RegistrationForm
+from django.utils import timezone
 
 def event_list(request):
+    now = timezone.now()
+    upcoming_events = Event.objects.filter(date__gt=now.date()) | Event.objects.filter(date=now.date(), time__gte=now.time())
+    finished_events = Event.objects.filter(date__lt=now.date()) | Event.objects.filter(date=now.date(), time__lt=now.time())
     query = request.GET.get('q')
     if query:
-         events = Event.objects.filter(title__icontains=query)
-    else:
-        events = Event.objects.all().order_by('date')
-    return render(request, 'events/event_list.html', {'events': events})
+        upcoming_events = upcoming_events.filter(title__icontains=query)
+        finished_events = finished_events.filter(title__icontains=query)
+    return render(request, 'events/event_list.html', {
+        'upcoming_events': upcoming_events.order_by('date', 'time'),
+        'finished_events': finished_events.order_by('-date', '-time')
+        })
 
 @login_required
 def event_detail(request, pk):
     event = get_object_or_404(Event, pk=pk)
+    now = timezone.now()
+    is_upcoming = (event.date > now.date()) or (event.date == now.date() and event.time >= now.time())
     registration = Registration.objects.filter(event=event, user=request.user).first()
-    return render(request, 'events/event_details.html', {'event': event, 'registration': registration,})
+    return render(request, 'events/event_details.html', {
+        'event': event, 
+        'registration': registration,
+        'is_upcoming': is_upcoming
+        })
 
 
 @login_required

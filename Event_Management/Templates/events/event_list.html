@@ -5,20 +5,37 @@
 <div class="container mt-4">
 <h2>Upcoming Events</h2>
 <form method="GET" action="" class="form-inline mb-4">
-    <input type="text" name="q" class="form-control mr-2" placeholder="Search events..." value="{{ request.GET.q }}">
+    <input type="text" name="q" class="form-control mr-2" placeholder="Search events..." 
+    value="{{ request.GET.q }}">
     <button type="submit" class="btn btn-secondary">Search</button>
 </form>
 
-<ul class="list-group">
-    {% for event in events %}
+<ul class="list-group mb-4">
+    {% for event in upcoming_events %}
         <li class="list-group-item">
-            <a href="{% url 'event_detail' event.pk %}">  {{ event.title }} - {{ event.date }} {{ event.time }} </a>
+            <a href="{% url 'event_detail' event.pk %} " class="font-weight-bold">  
+                {{ event.title }} </a>
+                <p>{{ event.date }} at {{ event.time }}</p>
+                <p>{{ event.description|truncatewords:20 }}</p>
         </li>
         {% empty %}
-            <li class="list-group-item">
-                No events found.
+            <li class="list-group-item">No upcoming events found.</li>
             </li>
     {% endfor %}
 </ul>
+<h2>Recently Finished Events</h2>
+    <ul class="list-group">
+        {% for event in finished_events %}
+            <li class="list-group-item">
+                <a href="{% url 'event_detail' event.pk %}" class="font-weight-bold">
+                    {{ event.title }}
+                </a>
+                <p>{{ event.date }} at {{ event.time }}</p>
+                <p>{{ event.description|truncatewords:20 }}</p>
+            </li>
+        {% empty %}
+            <li class="list-group-item">No recently finished events found.</li>
+        {% endfor %}
+    </ul>
 </div>
 {% endblock %}

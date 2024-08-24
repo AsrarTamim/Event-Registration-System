@@ -6,19 +6,28 @@
 <p>Date: {{ event.date }}</p>
 <p>Time: {{ event.time }}</p>
 <p>Location: {{ event.location }}</p>
-<p>Available Slots: {{ event.slots }}</p>
+
 {% if user.is_authenticated %}
+{% if is_upcoming %}
+<p>Available Slots: {{ event.slots }}</p>
 {% if registration %}
 <form method="POST" action="{% url 'unregister_from_event' event.pk %}">
     {% csrf_token %}
     <button type="submit" class="btn btn-warning">Unregister from this Event</button>
 </form>
 {% else %}
+{% if event.slots > 0 %}
     <form method="POST" action="{% url 'event_register' event.pk %}">
     {% csrf_token %}
     <button type="submit"class="btn btn-primary">Register for this Event</button>
     </form>
+ {% else %}
+    <p class="text-danger">No slots available for this event.</p>
     {% endif %}
+    {% endif %}
+{% else %}
+    <p class="text-muted">This event has already finished. Registration is closed.</p>
+{% endif %}
 {% else %}
     <p><a href="{% url 'login' %}">Login</a> to register for this event.</p>
 {% endif %}

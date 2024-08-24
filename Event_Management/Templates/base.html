@@ -2,14 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Event System{% endblock %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <nav>
-        <ul>
-            <li><a href="{% url 'event_list' %}">Home</a></li>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{% url 'event_list' %}">Home</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            
+            
             {% if user.is_authenticated %}
-            <li>
+            <li class="nav-item">
+                <span class="nav-link">Welcome, {{ user.username }}</span>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'user_dashboard' %}">Dashboard</a>
+            </li>
+            <li class="nav-item">
                 <form id="logout-form" method="POST" action="{% url 'logout' %}">
                     {% csrf_token %}
                     <button type="submit" style="background:none;border:none;color:#007bff;text-decoration:underline;cursor:pointer;">
@@ -18,12 +32,20 @@
                 </form>
             </li>
         {% else %}
-            <li><a href="{% url 'login' %}">Login</a></li>
-            <li><a href="{% url 'register' %}">Register</a></li>
+            <li class="nav-item"><a href="{% url 'login' %}">Login</a></li>
+            <li class="nav-item"><a href="{% url 'register' %}">Register</a></li>
         {% endif %}
         </ul>
+    </div>
     </nav>
-    <div>
+    <div class="container">
+        {% if messages %}
+        <div class="container mt-1 alert alert-success" role="alert">
+            {% for message in messages %}
+            {{ message }}
+            {% endfor %}
+        </div>
+        {% endif %}
     {% block content %}
     {% endblock %}
     </div>
