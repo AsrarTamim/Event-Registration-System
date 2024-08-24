@@ -1,12 +1,24 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
+<div class="container mt-4">
 <h2>Upcoming Events</h2>
-<ul>
+<form method="GET" action="" class="form-inline mb-4">
+    <input type="text" name="q" class="form-control mr-2" placeholder="Search events..." value="{{ request.GET.q }}">
+    <button type="submit" class="btn btn-secondary">Search</button>
+</form>
+
+<ul class="list-group">
     {% for event in events %}
-        <li>
+        <li class="list-group-item">
             <a href="{% url 'event_detail' event.pk %}">  {{ event.title }} - {{ event.date }} {{ event.time }} </a>
         </li>
+        {% empty %}
+            <li class="list-group-item">
+                No events found.
+            </li>
     {% endfor %}
 </ul>
+</div>
 {% endblock %}

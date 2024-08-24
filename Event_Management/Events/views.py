@@ -5,7 +5,11 @@ from django.contrib import messages
 from .forms import RegistrationForm
 
 def event_list(request):
-    events = Event.objects.all().order_by('date')
+    query = request.GET.get('q')
+    if query:
+         events = Event.objects.filter(title__icontains=query)
+    else:
+        events = Event.objects.all().order_by('date')
     return render(request, 'events/event_list.html', {'events': events})
 
 
