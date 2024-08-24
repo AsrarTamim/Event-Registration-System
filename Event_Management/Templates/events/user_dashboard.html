@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Your Registered Events</h2>
+<ul>
+    {% for registration in registrations %}
+        <li>
+            <a href="{% url 'event_detail' registration.event.pk %}">
+                {{ registration.event.title }} - {{ registration.event.date }} {{ registration.event.time }}
+            </a>
+            <p>Registered on: {{ registration.registered_at }}</p>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}

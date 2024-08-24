@@ -47,3 +47,10 @@ def unregister_from_event(request, pk):
     else:
         messages.error(request, f'You are not registered for {event.title}.')
     return redirect('event_detail', pk=event.pk)
+
+
+
+@login_required
+def user_dashboard(request):
+    registrations = Registration.objects.filter(user=request.user)
+    return render(request, 'events/user_dashboard.html', {'registrations': registrations})
